@@ -77,7 +77,11 @@
         android:layout_height="0dp"
         android:layout_weight="0"
         android:visibility="invisible" />
-
+    <Button
+        android:id="@+id/vncbutton"
+        android:layout_width= "wrap_content"
+        android:layout_height="wrap_content"
+        />
     <!-- Most visited items -->
     <org.chromium.chrome.browser.ntp.MostVisitedLayout
         android:id="@+id/most_visited_layout"

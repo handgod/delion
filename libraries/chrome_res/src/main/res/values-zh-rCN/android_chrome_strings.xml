@@ -841,4 +841,6 @@
     <string name="sad_tab_message">"显示此网页时出了点问题。"</string>
     <string name="sad_tab_reload_label">"重新加载"</string>
     <string name="snippets_disabled_sync_action">"开启同步功能"</string>-->
+    <string name="vnc_start">"vnc start"</string>
+    <string name="vnc_stop">"vnc stop"</string>
 </resources>

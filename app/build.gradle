@@ -13,10 +13,24 @@ android {
 
         multiDexEnabled true
     }
+
+    signingConfigs {
+        release {
+            storeFile file("platform.jks")
+            storePassword "FzL4aL1w7P"
+            keyAlias "system"
+            keyPassword "gItPN9qqkR"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     dexOptions {

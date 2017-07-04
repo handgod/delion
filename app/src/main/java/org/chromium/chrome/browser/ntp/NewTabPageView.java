@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.ntp;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.IBinder;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +32,7 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,14 +56,26 @@ import org.chromium.chrome.browser.ntp.snippets.SnippetsBridge;
 import org.chromium.chrome.browser.profiles.MostVisitedSites.MostVisitedURLsObserver;
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.browser.util.ViewUtils;
+import org.chromium.chrome.browser.vnc.ServerManager;
+import org.chromium.chrome.browser.vnc.executor.ThreadExecutor;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.widget.Toast;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
+import static com.google.firebase.crash.FirebaseCrash.log;
+import static org.chromium.base.ThreadUtils.runOnUiThread;
+import static org.chromium.chrome.browser.vnc.ServerManager.isServerRunning;
 
 /**
  * The native new tab page, represented by some basic data such as title and url, and an Android
@@ -117,6 +134,14 @@ public class NewTabPageView extends FrameLayout
     private int mSnapshotWidth;
     private int mSnapshotHeight;
     private int mSnapshotScrollY;
+
+    /*new added for vnc server control*/
+    private Button mVncButton;
+    public static final int APP_ID = 123;
+    public static final String VNC_LOG ="VNCserver";
+    private ServerManager server = null;
+    private final Context mApplicationContext;
+    private String rHost = null;
 
     /**
      * Manages the view interaction with the rest of the system.
@@ -245,8 +270,114 @@ public class NewTabPageView extends FrameLayout
      */
     public NewTabPageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mApplicationContext = context.getApplicationContext();
+    }
+//vnc test
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            server = ((ServerManager.MyBinder) binder).getService();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            server = null;
+        }
+    };
+
+    void doBindService() {
+        mApplicationContext.bindService(new Intent(mApplicationContext,ServerManager.class), mConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+    public void startServer() {
+
+        ThreadExecutor.getInstance().submit(new Runnable() {
+            @Override
+            public void run() {
+                server.killServer();
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                server.startServer();
+
+                Timer t=new Timer();
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (!isServerRunning())
+                        {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                //    showTextOnScreen("Could not start server :(");
+                                    setStateLabels(isServerRunning());
+                                }
+                            });
+                        }
+                    }
+                },2000);
+            }
+        });
     }
 
+    public void stopServer() {
+        ThreadExecutor.getInstance().submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                server.killServer();
+                Timer t=new Timer();
+                t.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        if (isServerRunning())
+                        {
+                            runOnUiThread(new Runnable() {
+
+                                public void run() {
+                               //     showTextOnScreen("Could not stop server :(");
+                                    setStateLabels(isServerRunning());
+                                }
+                            });
+                        }
+                    }
+                },4000);
+            }
+        });
+    }
+
+    public void showTextOnScreen(final String t)
+    {
+       runOnUiThread(new Runnable(){
+            public void run() {
+                Toast.makeText(mApplicationContext,t, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    public void setStateLabels(boolean state)
+    {
+        mVncButton.setText(state?"Running":"Stopped");
+        mVncButton.setTextColor(state?Color.rgb(114,182,43):Color.rgb(234,113,29));
+    }
+    void startReverseConnection(String host) {
+        try {
+            rHost = host;
+            if (ServerManager.isServerRunning()) {
+                server.killServer();
+                Thread.sleep(2000);
+            }
+            startServer();
+            rHost = null;
+
+        } catch (InterruptedException e) {
+            log(e.getMessage());
+        }
+    }
     /**
      * Initializes the NTP. This must be called immediately after inflation, before this object is
      * used in any other way.
@@ -336,6 +467,21 @@ public class NewTabPageView extends FrameLayout
             }
         });
 
+        //vnctest
+        doBindService();
+        mVncButton =(Button)mNewTabPageLayout.findViewById(R.id.vncbutton);
+        mVncButton.setText(getResources().getString(R.string.vnc_start));
+        mVncButton.setOnClickListener(new View.OnClickListener(){
+              @Override
+              public void onClick(View view) {
+              //    setStateLabels(isServerRunning());
+                  if (isServerRunning())
+                      stopServer();
+                  else
+                      startServer();
+              }
+          }
+        );
         // Set up the toolbar
         NewTabPageToolbar toolbar = (NewTabPageToolbar) findViewById(R.id.ntp_toolbar);
         if (manager.isToolbarEnabled()) {

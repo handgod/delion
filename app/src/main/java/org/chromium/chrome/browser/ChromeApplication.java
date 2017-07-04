@@ -128,6 +128,7 @@ public class ChromeApplication extends ContentApplication {
     private static boolean sIsFinishedCachingNativeFlags;
     private static DocumentTabModelSelector sDocumentTabModelSelector;
 
+    private static ChromeApplication instance = null;
     /**
      * This class allows pausing scripts & network connections when we
      * go to the background and resume when we are back in foreground again.
@@ -208,6 +209,7 @@ public class ChromeApplication extends ContentApplication {
         UmaUtils.recordMainEntryPointTime();
         super.onCreate();
         ContextUtils.initApplicationContext(this);
+        instance = this;
 
         UiUtils.setKeyboardShowingDelegate(new UiUtils.KeyboardShowingDelegate() {
             @Override
@@ -246,6 +248,9 @@ public class ChromeApplication extends ContentApplication {
                 new UuidBasedUniqueIdentificationGenerator(this, SESSIONS_UUID_PREF_KEY), false);
     }
 
+    public static ChromeApplication getInstance(){
+        return instance;
+    }
     /**
      * Each top-level activity (ChromeTabbedActivity, FullscreenActivity) should call this during
      * its onStart phase. When called for the first time, this marks the beginning of a foreground
