@@ -11,6 +11,7 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.IOUtils;
+import org.chromium.base.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +24,7 @@ public class HttpClientUtils {
 
     private static final NameValuePair[] EMPTY_NAMEVALUE_PAIRS = new NameValuePair[] {};
     private static final String DEFAULT_CHARSET = "UTF-8";
-
+    private static final String TAG = "HttpClientUtils";
     private static MultiThreadedHttpConnectionManager connectionManager;
     private static HttpClient httpClient;
 
@@ -87,7 +88,7 @@ public class HttpClientUtils {
             try {
 				post.setRequestEntity(new StringRequestEntity(requestBody, contentType, "UTF-8"));
 			} catch (UnsupportedEncodingException ex) {
-                LOGGER.error("The Character Encoding is not supported", ex);
+           Log.e(TAG,"The Character Encoding is not supported");
                 throw ex;
 			}
         }
@@ -103,7 +104,7 @@ public class HttpClientUtils {
                 post.setRequestEntity(
                         new StringRequestEntity(requestBody, contentType, charset == null ? DEFAULT_CHARSET : charset));
             } catch (UnsupportedEncodingException ex) {
-                LOGGER.error("", ex);
+                Log.e(TAG,"UnsupportedEncodingException");
                 throw new Exception(ex);
             }
         } else {
@@ -171,16 +172,16 @@ public class HttpClientUtils {
             elapsedTime = System.currentTimeMillis() - startTime;
 
             if (statusCode != HttpStatus.SC_OK) {
-                LOGGER.error("调用http请求失败: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
+                Log.e(TAG,"调用http请求失败: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
                 throw new Exception("code: " + statusCode + ",调用http服务返回响应错误, url: " + method.getURI() + ",响应码：" + statusCode);
             } else {
-                LOGGER.info("调用http请求成功: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
+                Log.e(TAG,"调用http请求成功: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
             }
             return IOUtils.toByteArray(method.getResponseBodyAsStream());
         } catch (Exception ex) {
             statusCode = 499;
             try {
-                LOGGER.info(
+                Log.e(TAG,
                         "调用http请求异常: " + method.getURI() + ",耗时：" + elapsedTime + "ms, exception:" + ex.getMessage());
             } catch (URIException uriex) {
                 // ignore this exception
@@ -214,7 +215,7 @@ public class HttpClientUtils {
         try {
             filePart = new FilePart(fileName, file);
         } catch (FileNotFoundException ex) {
-            LOGGER.error("", ex);
+            Log.e(TAG,"");
             throw new Exception(ex);
         }
         if (parameters == null || parameters.isEmpty()) {

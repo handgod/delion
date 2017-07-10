@@ -16,7 +16,7 @@ import static java.net.Proxy.Type.HTTP;
 
 public class RegisterServer {
 
-    private static String url = "http://localhost:8080/repeater/control/RepeaterRegEvents";//nat.vivo.com.cn
+    private static String url = "http://118.89.48.252:8080/repeater/control/RepeaterRegEvents";
 
     private static String imei;
     private static String uniqueId;
@@ -34,7 +34,7 @@ public class RegisterServer {
         init();
         Map<String,String> map = new HashMap<String,String>();
         map.put("imei", imei);
-
+        map.put("uniqueId", "123456");
         try {
             str = HttpClientUtils.post(new StringBuilder(url).toString(), map);
         } catch (Exception e) {
