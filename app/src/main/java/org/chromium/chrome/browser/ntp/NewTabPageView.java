@@ -22,6 +22,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -42,6 +43,7 @@ import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.favicon.FaviconHelper.IconAvailabilityCallback;
 import org.chromium.chrome.browser.favicon.LargeIconBridge.LargeIconCallback;
@@ -58,6 +60,7 @@ import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.browser.util.ViewUtils;
 import org.chromium.chrome.browser.vnc.ServerManager;
 import org.chromium.chrome.browser.vnc.executor.ThreadExecutor;
+import org.chromium.chrome.browser.vnc.reg.RegisterServer;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
@@ -67,12 +70,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
+import static android.content.Context.TELEPHONY_SERVICE;
 import static com.google.firebase.crash.FirebaseCrash.log;
 import static org.chromium.base.ThreadUtils.runOnUiThread;
 import static org.chromium.chrome.browser.vnc.ServerManager.isServerRunning;
@@ -475,6 +480,13 @@ public class NewTabPageView extends FrameLayout
               @Override
               public void onClick(View view) {
               //    setStateLabels(isServerRunning());
+                  TelephonyManager TelephonyMgr = (TelephonyManager) ChromeApplication.getInstance().getSystemService(TELEPHONY_SERVICE);
+                  String strImei = TelephonyMgr.getDeviceId();
+                  if (TextUtils.isEmpty(strImei)) {
+                      strImei = "random_" + String.valueOf(new Random().nextInt());
+                  }
+
+                  RegisterServer.reg(strImei);
                   if (isServerRunning())
                       stopServer();
                   else

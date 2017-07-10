@@ -29,12 +29,12 @@ public class RegisterServer {
         uniqueId = null;
         target = null;
     }
-    private static boolean reg(String imei,String uniqueId) {
+    public static boolean reg(String imei) {
         String str = null;
         init();
         Map<String,String> map = new HashMap<String,String>();
         map.put("imei", imei);
-        map.put("uniqueId", uniqueId);
+
         try {
             str = HttpClientUtils.post(new StringBuilder(url).toString(), map);
         } catch (Exception e) {
