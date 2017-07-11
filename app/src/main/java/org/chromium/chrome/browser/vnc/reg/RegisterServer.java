@@ -1,13 +1,19 @@
 package org.chromium.chrome.browser.vnc.reg;
 
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.chromium.chrome.browser.ChromeApplication;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import static android.content.Context.TELEPHONY_SERVICE;
 import static java.net.Proxy.Type.HTTP;
 
 /**
@@ -16,8 +22,8 @@ import static java.net.Proxy.Type.HTTP;
 
 public class RegisterServer {
 
-   private static String url = "http://118.89.48.252:8080/repeater/control/RepeaterRegEvents";
-    //   private static String url = "http://10.13.40.20:8080/repeater/control/RepeaterRegEvents";
+    private static String url = "http://localhost:8080/repeater/control/RepeaterRegEvents";
+  //  private static String url = "http://118.89.48.252:8080/repeater/control/RepeaterRegEvents";
 
     private static String imei;
     private static String uniqueId;
@@ -30,12 +36,20 @@ public class RegisterServer {
         uniqueId = null;
         target = null;
     }
-    public static boolean reg(String imei) {
+    public static boolean reg() {
         String str = null;
+
         init();
+        TelephonyManager TelephonyMgr = (TelephonyManager) ChromeApplication.getInstance().getSystemService(TELEPHONY_SERVICE);
+        imei = TelephonyMgr.getDeviceId();
+        if (TextUtils.isEmpty(imei)) {
+            imei = "random_" + String.valueOf(new Random().nextInt());
+        }
+
         Map<String,String> map = new HashMap<String,String>();
         map.put("imei", imei);
         map.put("uniqueId", "123456");
+
         try {
             str = HttpClientUtils.post(new StringBuilder(url).toString(), map);
         } catch (Exception e) {

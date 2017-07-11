@@ -356,6 +356,20 @@ public class NewTabPageView extends FrameLayout
         });
     }
 
+    public void startReg() {
+        ThreadExecutor.getInstance().submit(new Runnable() {
+            @Override
+            public void run() {
+                RegisterServer.reg();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public void showTextOnScreen(final String t)
     {
        runOnUiThread(new Runnable(){
@@ -480,13 +494,7 @@ public class NewTabPageView extends FrameLayout
               @Override
               public void onClick(View view) {
               //    setStateLabels(isServerRunning());
-                  TelephonyManager TelephonyMgr = (TelephonyManager) ChromeApplication.getInstance().getSystemService(TELEPHONY_SERVICE);
-                  String strImei = TelephonyMgr.getDeviceId();
-                  if (TextUtils.isEmpty(strImei)) {
-                      strImei = "random_" + String.valueOf(new Random().nextInt());
-                  }
-
-                  RegisterServer.reg(strImei);
+                  startReg();
                   if (isServerRunning())
                       stopServer();
                   else
