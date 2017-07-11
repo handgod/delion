@@ -11,7 +11,8 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.IOUtils;
-import org.chromium.base.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,9 +23,10 @@ import java.util.Map;
 
 public class HttpClientUtils {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("httpInvoker");
     private static final NameValuePair[] EMPTY_NAMEVALUE_PAIRS = new NameValuePair[] {};
     private static final String DEFAULT_CHARSET = "UTF-8";
-    private static final String TAG = "HttpClientUtils";
+
     private static MultiThreadedHttpConnectionManager connectionManager;
     private static HttpClient httpClient;
 
@@ -69,7 +71,7 @@ public class HttpClientUtils {
     }
 
     public static String postQuietly(String url, Map<String, String> parameters, String contentType, String charset,
-                                     String requestBody) {
+            String requestBody) {
         try {
             return post(url, parameters, contentType, charset, requestBody);
         } catch (Exception ex) {
@@ -88,7 +90,7 @@ public class HttpClientUtils {
             try {
 				post.setRequestEntity(new StringRequestEntity(requestBody, contentType, "UTF-8"));
 			} catch (UnsupportedEncodingException ex) {
-           Log.e(TAG,"The Character Encoding is not supported");
+                LOGGER.error("The Character Encoding is not supported", ex);
                 throw ex;
 			}
         }
@@ -96,7 +98,7 @@ public class HttpClientUtils {
     }
 
     public static String post(String url, Map<String, String> parameters, String contentType, String charset,
-                              String requestBody) throws Exception {
+            String requestBody) throws Exception {
         PostMethod post = new PostMethod(url);
         if (requestBody != null) {
             post.setQueryString(buildNameValuePair(parameters));
@@ -104,7 +106,7 @@ public class HttpClientUtils {
                 post.setRequestEntity(
                         new StringRequestEntity(requestBody, contentType, charset == null ? DEFAULT_CHARSET : charset));
             } catch (UnsupportedEncodingException ex) {
-                Log.e(TAG,"UnsupportedEncodingException");
+                LOGGER.error("", ex);
                 throw new Exception(ex);
             }
         } else {
@@ -172,16 +174,16 @@ public class HttpClientUtils {
             elapsedTime = System.currentTimeMillis() - startTime;
 
             if (statusCode != HttpStatus.SC_OK) {
-                Log.e(TAG,"调用http请求失败: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
+                LOGGER.error("调用http请求失败: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
                 throw new Exception("code: " + statusCode + ",调用http服务返回响应错误, url: " + method.getURI() + ",响应码：" + statusCode);
             } else {
-                Log.e(TAG,"调用http请求成功: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
+                LOGGER.info("调用http请求成功: " + method.getURI() + ",耗时：" + elapsedTime + "ms, 响应码: " + statusCode);
             }
             return IOUtils.toByteArray(method.getResponseBodyAsStream());
         } catch (Exception ex) {
             statusCode = 499;
             try {
-                Log.e(TAG,
+                LOGGER.info(
                         "调用http请求异常: " + method.getURI() + ",耗时：" + elapsedTime + "ms, exception:" + ex.getMessage());
             } catch (URIException uriex) {
                 // ignore this exception
@@ -215,7 +217,7 @@ public class HttpClientUtils {
         try {
             filePart = new FilePart(fileName, file);
         } catch (FileNotFoundException ex) {
-            Log.e(TAG,"");
+            LOGGER.error("", ex);
             throw new Exception(ex);
         }
         if (parameters == null || parameters.isEmpty()) {
@@ -232,10 +234,16 @@ public class HttpClientUtils {
     }
 
     public static void main(String[] args) throws Exception {
-
+        // for(int i = 0;i < 10000; i++){
+        // get("http://report.vivotest.com/login.jsp");
+        // System.out.println(i);
+        // }
         for (int i = 0; i < 100; i++) {
-
-      //      System.out.println(get("http://testReport/report"));
+            // if(!InetAddress.getByName("report.vivo-test.com").getHostAddress().equals("192.168.2.70")){
+            // break;
+            // }
+            // System.out.println(i);
+            System.out.println(get("http://report.vivo-test.com/testReport/report"));
         }
     }
 
