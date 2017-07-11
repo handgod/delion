@@ -234,16 +234,10 @@ public class HttpClientUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        // for(int i = 0;i < 10000; i++){
-        // get("http://report.vivotest.com/login.jsp");
-        // System.out.println(i);
-        // }
+
         for (int i = 0; i < 100; i++) {
-            // if(!InetAddress.getByName("report.vivo-test.com").getHostAddress().equals("192.168.2.70")){
-            // break;
-            // }
-            // System.out.println(i);
-            System.out.println(get("http://report.vivo-test.com/testReport/report"));
+
+            System.out.println(get("http://testReport/report"));
         }
     }
 
