@@ -1,65 +1,43 @@
 package org.chromium.chrome.browser.vnc.reg;
 
 public class RegistResponse {
-    private Long userId;
 
-    private String sessionId;
-
-    private byte[] pubKey;
-
-    private AddressInfo natServer;
-
-    private String repeater;
-
+    private String IMEI;
+    private String RepeaterIpAddress;
+    private String USERID;
     public RegistResponse() {
     }
 
-    public RegistResponse(Long userId, String sessionId, byte[] pubKey,
-                          AddressInfo natServer, String repeater) {
-        this.userId = userId;
-        this.sessionId = sessionId;
-        this.pubKey = pubKey;
-        this.natServer = natServer;
-        this.repeater = repeater;
+    //{"regInfo":{"IMEI":"1234567890987665","RepeaterIpAddress":"118.89.48.252","uniqueId":"123456"}}
+    public RegistResponse(String IMEI, String RepeaterIpAddress,String USERID) {
+        this.IMEI = IMEI;
+        this.RepeaterIpAddress = RepeaterIpAddress;
+        this.USERID = USERID;
+
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getIMEI() {
+        return IMEI;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setIMEI(String IMEI) {
+        this.IMEI = IMEI;
     }
 
-    public AddressInfo getNatServer() {
-        return natServer;
+    public String getUSERID() {
+        return USERID;
     }
 
-    public void setNatServer(AddressInfo natServer) {
-        this.natServer = natServer;
+    public void setUSERID(String USERID) {
+        this.USERID = USERID;
     }
 
-    public byte[] getPubKey() {
-        return pubKey;
+    public String getRepeaterIpAddress() {
+        return RepeaterIpAddress;
     }
 
-    public void setPubKey(byte[] pubKey) {
-        this.pubKey = pubKey;
+    public void setRepeaterIpAddress(String RepeaterIpAddress) {
+        this.RepeaterIpAddress = RepeaterIpAddress;
     }
 
-    public String getRepeater() {
-        return repeater;
-    }
-
-    public void setRepeater(String repeater) {
-        this.repeater = repeater;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

@@ -26,14 +26,14 @@ public class RegisterServer {
     private static String url = "http://118.89.48.252:8080/repeater/control/RepeaterRegEvents";
 
     private static String imei;
-    private static String uniqueId;
+    private static String userId;
     public static String target = null;
 
     private RegisterServer() {
     }
     private static void init(){
-        imei = null;
-        uniqueId = null;
+        imei = "1234567890987665";
+        userId = "123456";
         target = null;
     }
     public static boolean reg() {
@@ -47,9 +47,8 @@ public class RegisterServer {
         }
 
         Map<String,String> map = new HashMap<String,String>();
-        map.put("imei", imei);
-        map.put("uniqueId", "123456");
-
+        map.put("IMEI", imei);
+        map.put("USERID", userId);
         try {
             str = HttpClientUtils.post(new StringBuilder(url).toString(), map);
         } catch (Exception e) {
@@ -60,6 +59,7 @@ public class RegisterServer {
             return Boolean.FALSE;
         }
         WebResult result = JsonUtils.TO_OBJ(str, WebResult.class);
+        //{"regInfo":{"IMEI":"1234567890987665","RepeaterIpAddress":"118.89.48.252","uniqueId":"123456"}}
         if (!result.isStatus()) {
             return Boolean.FALSE;
         }
