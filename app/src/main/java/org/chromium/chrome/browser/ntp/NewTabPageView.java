@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.browser.util.ViewUtils;
 import org.chromium.chrome.browser.vnc.ServerManager;
 import org.chromium.chrome.browser.vnc.executor.ThreadExecutor;
+import org.chromium.chrome.browser.vnc.reg.Constants;
 import org.chromium.chrome.browser.vnc.reg.RegisterServer;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -494,11 +495,20 @@ public class NewTabPageView extends FrameLayout
               @Override
               public void onClick(View view) {
               //    setStateLabels(isServerRunning());
-                  startReg();
+
+               startReg();
+
+                  try {
+                      Thread.sleep(4000);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+
                   if (isServerRunning())
-                      stopServer();
-                  else
-                      startServer();
+                  stopServer();
+              else
+                  startServer();
+
               }
           }
         );

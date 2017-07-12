@@ -125,6 +125,7 @@
     <orderEntry type="library" exported="" name="mediarouter-v7-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="dom_distiller_core_java" level="project" />
+    <orderEntry type="library" exported="" name="commons-codec-1.10" level="project" />
     <orderEntry type="library" exported="" name="commons-httpclient-3.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-lite-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="ui_java" level="project" />
@@ -164,6 +165,7 @@
     <orderEntry type="library" exported="" name="battery_monitor_android" level="project" />
     <orderEntry type="library" exported="" name="play-services-clearcut-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="vibration_manager_android" level="project" />
+    <orderEntry type="library" exported="" name="commons-logging-1.2" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-wearable-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="bookmarks_java" level="project" />
@@ -172,6 +174,7 @@
     <orderEntry type="library" exported="" name="httpclient-4.5.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-api-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.3.0" level="project" />
+    <orderEntry type="library" exported="" name="slf4j-api-1.7.5" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-messaging-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-auth-9.2.1" level="project" />

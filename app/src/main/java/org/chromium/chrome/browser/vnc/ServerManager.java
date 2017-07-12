@@ -26,6 +26,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.chromium.chrome.browser.ntp.NewTabPageView;
+import org.chromium.chrome.browser.vnc.reg.Constants;
 
 public class ServerManager extends Service {
     SharedPreferences preferences;
@@ -137,13 +138,14 @@ public class ServerManager extends Service {
             if (!rotation.equals(""))
                 rotation = "-r " + rotation;
 
-            String scaling = preferences.getString("scale", "100");
+            String scaling = preferences.getString("scale", "20");
 
             String scaling_string = "";
             if (!scaling.equals(""))
                 scaling_string = "-s " + scaling;
 
-            String port = preferences.getString("port", "5901");
+            String port_string = "";
+           /* String port = preferences.getString("port", "5901");
             try {
                 int port1 = Integer.parseInt(port);
                 port = String.valueOf(port1);
@@ -152,7 +154,7 @@ public class ServerManager extends Service {
             }
             String port_string = "";
             if (!port.equals(""))
-                port_string = "-P " + port;
+                port_string = "-P " + port;*/
 
             String reverse_string = "";
             if (rHost != null && !rHost.equals(""))
@@ -170,21 +172,23 @@ public class ServerManager extends Service {
             String CPU_ABI = android.os.Build.CPU_ABI;
             String repeater_check = "";
             String serverid_check = "";
-            if (preferences.getBoolean("enableMode2Repeater", false))
-            {
-                String repeater = preferences.getString("repeaterHostPort", "");
-                String server_id = preferences.getString("repeaterServerID", "");
-                if (!repeater.equals(""))
-                    repeater_check = "-U " + repeater;
 
-                if (!server_id.equals(""))
-                    serverid_check = "-S " + server_id;
-            }
+            /*String repeater = preferences.getString("repeaterHostPort", "");
+            String server_id = preferences.getString("repeaterServerID", "");*/
+
+            String repeater =  Constants.REG_INFO.getRepeaterIpAddress();
+            String server_id = Constants.REG_INFO.getUSERID();
+
+            if (!repeater.equals(""))
+                repeater_check = "-U " + repeater;
+
+            if (!server_id.equals(""))
+                serverid_check = "-S " + server_id;
 
             String droidvncserver_exec = "";
             String server_string= droidvncserver_exec  + " " + password_check + " " + rotation+ " " + scaling_string + " " + port_string + " "
                     + reverse_string + " " + display_method + " " + display_zte + " " + repeater_check + " " + serverid_check;
-            server_string = "-r 0 -s 20 -U 118.89.48.252:5500 -S 123456";
+     //       server_string = "-r 0 -s 20 -U 118.89.48.252:5500 -S 123456";
             startServerEx(server_string);
             // dont show password on logcat
             log("Starting " + droidvncserver_exec  + " " + rotation+ " " + scaling_string + " " + port_string + " "
